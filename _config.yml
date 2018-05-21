@@ -72,12 +72,11 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: even
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   - type: git
-    repo: https://github.com/xpol/xpol.github.io.git
-#  - type: heroku
-#    repo: https://git.heroku.com/xpolife.git
+    repo: https://github.com/xpol/x.po.life.git
+    branch: gh-pages
