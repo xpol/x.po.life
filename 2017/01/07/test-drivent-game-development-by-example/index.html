@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="测试驱动游戏开发：一个例子"/><link rel="alternate" href="/default" title="XPOLIFE"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://x.po.life/2017/01/07/test-drivent-game-development-by-example/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+
+    <title>测试驱动游戏开发：一个例子 - XPOLIFE</title>
+  <meta name="generator" content="Hexo 4.2.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">XPOLIFE</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">Home
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">XPOLIFE</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            Home
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">测试驱动游戏开发：一个例子
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-01-07
+        </span></div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#例子"><span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需求分析"><span class="toc-text">需求分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#添加单元测试"><span class="toc-text">添加单元测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现"><span class="toc-text">实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重构"><span class="toc-text">重构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二个功能的单元测试"><span class="toc-text">第二个功能的单元测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二个功能的实现"><span class="toc-text">第二个功能的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重构-1"><span class="toc-text">重构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#循环"><span class="toc-text">循环</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束语"><span class="toc-text">结束语</span></a></li></ol>
+    </div>
+  </div><div class="post-content"><p>什么是<a href="https://en.wikipedia.org/wiki/Test-driven_development" target="_blank" rel="noopener">测试驱动开发（Test-driven development）</a>？测试驱动开发在开发每一个功能时按照下面的步骤：</p>
+<ol>
+<li>编写单元测试</li>
+<li>运行测试，测试失败</li>
+<li>编写代码</li>
+<li>使测试通过</li>
+<li>重构改进代码</li>
+</ol>
+<p>测试驱动开发适合游戏开发吗？</p>
+<p>良好设计的游戏逻辑，适合测试驱动开发；界面啊、特效啊、交互啊……这些就不太容易进行测试驱动开发。</p>
+<p>下面我们举一个例子来看一下如何对游戏逻辑进行测试驱动开发。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>某种升级游戏中，为玩家和 AI 提供跟牌的必选牌和可选牌的组合。代码采用 Lua 编写，测试使用 <a href="https://olivinelabs.com/busted/" target="_blank" rel="noopener">busted</a> 。</p>
+<h3 id="需求分析"><a href="#需求分析" class="headerlink" title="需求分析"></a>需求分析</h3><p>对问题进行分类，从简单的入手，分析如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">## 头家出 n (n=1,2,4,6,8...) 张牌，跟牌的时候根据当前玩家手牌：</span></span><br><span class="line"><span class="bullet">  - </span>1. 同花色无牌；则无强制出牌，可跟手牌中任意 n 张牌的组合。</span><br><span class="line"><span class="bullet">  - </span>2. 同花色有牌但是牌不够或者刚好够：</span><br><span class="line"><span class="bullet">  - </span>2.1. 同花色所有手牌必出</span><br><span class="line"><span class="bullet">  - </span>2.2. 如果不够，用任意其他手牌补足 n 张</span><br></pre></td></tr></table></figure>
+<p>这里只列出了两种最简单的情况，实际的列表要长的多，列表嵌套的层级也更深。</p>
+<p>需要注意的是，同等级的点之间一定要完整覆盖问题，而且不从叠。</p>
+<h3 id="添加单元测试"><a href="#添加单元测试" class="headerlink" title="添加单元测试"></a>添加单元测试</h3><p>基于 busted 编写第一个需求，缺牌情况下的单元测试如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">':findFollows()'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">  describe(<span class="string">'1. when led suit is void in hand.'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">    it(<span class="string">'allows play any cards in hand'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">      <span class="keyword">local</span> hand = Hand(<span class="string">'♥9'</span>, &#123;<span class="string">'♥A'</span>,<span class="string">'♥A'</span>,<span class="string">'♠7'</span>,<span class="string">'♣A'</span>,<span class="string">'♣K'</span>,<span class="string">'☆'</span>,<span class="string">'★'</span>&#125;)</span><br><span class="line">      <span class="keyword">local</span> mandatory, choices = hand:findFollows(<span class="string">'♦'</span>, <span class="number">1</span>)</span><br><span class="line">      <span class="built_in">assert</span>.are.same(&#123;&#125;, mandatory) <span class="comment">-- no mandatory cards</span></span><br><span class="line">    <span class="keyword">end</span>)</span><br><span class="line">  <span class="keyword">end</span>)</span><br><span class="line"><span class="keyword">end</span>)</span><br></pre></td></tr></table></figure>
+<p><code>describe</code> 中采用和需求相同的编号来表示这段代码对应的需求，下面实现代码注释也是这样标识的。</p>
+<p>这个时候运行单元测试，将出现测试失败。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>接下来完成第一中情况下的代码实现：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Hand:findFollows</span><span class="params">(ledsuit, n)</span></span></span><br><span class="line">  <span class="keyword">local</span> totalCardsInLeadSuit = ...</span><br><span class="line">  <span class="keyword">local</span> cardsInLedSuit = ...</span><br><span class="line"></span><br><span class="line">  <span class="comment">-- 1.</span></span><br><span class="line">  <span class="keyword">if</span> totalCardsInLeadSuit == <span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> &#123;&#125;, combineOf(self:all(), n)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>这里省略了部分实现细节，只列出了代码骨架。在实现过程中不断运行测试，直到通过就表示完成改功能了。</p>
+<h3 id="重构"><a href="#重构" class="headerlink" title="重构"></a>重构</h3><p>之后可以进行代码进行重构和改进。在这个过程中，有可能发现一些额外的测试需要添加。</p>
+<h3 id="第二个功能的单元测试"><a href="#第二个功能的单元测试" class="headerlink" title="第二个功能的单元测试"></a>第二个功能的单元测试</h3><p>然后开始下一个需求的单元测试编写：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'2. have not enough led suit cards in hand'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">  <span class="keyword">local</span> hand</span><br><span class="line">  before_each(<span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">    hand = Hand(<span class="string">'♥9'</span>, &#123;<span class="string">'♦A'</span>,<span class="string">'♦A'</span>,<span class="string">'♠7'</span>,<span class="string">'♣A'</span>,<span class="string">'♣K'</span>,<span class="string">'☆'</span>,<span class="string">'★'</span>&#125;)</span><br><span class="line">  <span class="keyword">end</span>)</span><br><span class="line">  it(<span class="string">'2.1. all cards in led suit are mandatory'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">    <span class="keyword">local</span> mandatory, _ = hand:findFollows(<span class="string">'♦'</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="built_in">assert</span>.are.same(&#123;<span class="string">'♦A'</span>,<span class="string">'♦A'</span>&#125;, mandatory)</span><br><span class="line">  <span class="keyword">end</span>)</span><br><span class="line">  it(<span class="string">'2.2. rest use all cards combinations'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">    <span class="keyword">local</span> _, choices = hand:findFollows(<span class="string">'♦'</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="built_in">assert</span>.are.same(&#123;low=&#123;<span class="string">'♠7'</span>,<span class="string">'♣A'</span>&#125;, score=&#123;<span class="string">'♣K'</span>, <span class="string">'♠7'</span>&#125;&#125;, choices)</span><br><span class="line">  <span class="keyword">end</span>)</span><br><span class="line"><span class="keyword">end</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="第二个功能的实现"><a href="#第二个功能的实现" class="headerlink" title="第二个功能的实现"></a>第二个功能的实现</h3><p>然后对应的实现：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Hand:findFollows</span><span class="params">(ledsuit, n)</span></span></span><br><span class="line">  <span class="comment">-- 1.</span></span><br><span class="line">  <span class="comment">-- 2.</span></span><br><span class="line">  <span class="keyword">if</span> totalCardsInLeadSuit &lt;= n <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">local</span> nl = n-totalCardsInLeadSuit</span><br><span class="line">    <span class="keyword">local</span> others = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> nl &gt; <span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">      others = self:cardsExcept(ledsuit)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">return</span> cardsInLedSuit, combineOf(others, nl)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h3 id="重构-1"><a href="#重构-1" class="headerlink" title="重构"></a>重构</h3><p>再次，可能才实现中的代码有些不优雅的地方，重构它。</p>
+<h3 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h3><p>按照上面的循环进行更多功能的开发：</p>
+<p>到现在你大概理解单元测试和游戏开发如何结合了。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>测试驱动游戏开发要点：</p>
+<ol>
+<li>测试从需求作为出发点，这样能保证实现的功能是需求想要的；</li>
+<li>按照 写测试、测试失败、写功能代码、测试通过、重构 的循环来进行开发；</li>
+<li>用和需求相同的编号来标识功能点，方便功能跟踪。</li>
+</ol>
+
+      </div>
+      <div class="post-copyright">
+    <p class="copyright-item">
+      <span>Author: </span>
+      <a href="https://x.po.life">Xpol Wan</a>
+    </p>
+    <p class="copyright-item">
+      <span>Link: </span>
+      <a href="https://x.po.life/2017/01/07/test-drivent-game-development-by-example/">https://x.po.life/2017/01/07/test-drivent-game-development-by-example/</a>
+    </p>
+    <p class="copyright-item">
+      <span>License: </span><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+      <footer class="post-footer">
+        
+        <nav class="post-nav"><a class="prev" href="/2019/05/12/visual-studio-code-video-support/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Visual Studio Code 视频支持折腾记</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+        <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
+  </span>
+
+  <span class="copyright-year">&copy;2015 - 2020<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Xpol Wan</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="description" content="Visual Studio Code 视频支持折腾记"/><link rel="alternate" href="/default" title="XPOLIFE"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0" />
+<link rel="canonical" href="https://x.po.life/2019/05/12/visual-studio-code-video-support/"/>
+
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0" />
+
+<script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":"","latex":false};
+</script>
+
+    <title>Visual Studio Code 视频支持折腾记 - XPOLIFE</title>
+  <meta name="generator" content="Hexo 4.2.0"></head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">XPOLIFE</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">Home
+          </li>
+      </a></ul>
+</nav>
+<div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">XPOLIFE</a>
+</div>
+
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
+          <a class="menu-item-link" href="/">
+            Home
+            </a>
+        </li>
+      </ul></nav>
+</header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content"><article class="post">
+    <header class="post-header">
+      <h1 class="post-title">Visual Studio Code 视频支持折腾记
+        </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-05-12
+        </span></div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#第一回：Code插件尝试"><span class="toc-text">第一回：Code插件尝试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二回：自己编译Code"><span class="toc-text">第二回：自己编译Code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三回：VSCodium"><span class="toc-text">第三回：VSCodium</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第四回：Atom"><span class="toc-text">第四回：Atom</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第五回：峰回路转"><span class="toc-text">第五回：峰回路转</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-text">后记</span></a></li></ol>
+    </div>
+  </div><div class="post-content"><p>由于项目需要，打算使用Markdown作为内容制作的格式。而项目中有不少内容是需要展示音频和视频的地方。也就是说需要让Markdown支持音频和视频格式。</p>
+<p>项目程序员的非Vim党们使用的都是Visual Studio Code（后面简称Code）。所以自然想选择Code作为Markdown编辑器了。</p>
+<p>所以问题归结为，如何让VSCode预览的时候把Markdown里面的影视频链接变成video和audio标签。</p>
+<p>通过一番搜索，发现Code内部Markdown预览使用的是markdown-it，并且提供了扩展markdown-it的接口。<br>同时markdown-it又现成的markdown-it-html5-embed插件。所以应该是写一个小插件就能了事的。</p>
+<h2 id="第一回：Code插件尝试"><a href="#第一回：Code插件尝试" class="headerlink" title="第一回：Code插件尝试"></a>第一回：Code插件尝试</h2><p>写个简单的Code插件，为markdown-it加载跟多的插件，只要几行代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">activate</span>(<span class="params">context</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        extendMarkdownIt(md) &#123;</span><br><span class="line">            <span class="keyword">return</span> md</span><br><span class="line">                .use(<span class="built_in">require</span>(<span class="string">"markdown-it-html5-embed"</span>), h5embedOptions);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>挺简单吧，不过如果这就是结局，那也太简单了。</p>
+<p>发布代码，测试。</p>
+<p>什么灰色的影视频按钮？什么鬼？</p>
+<p>继续搜索，Code和音视频支持，结果发现：Code居然在发布的时候移除了全部ffmpeg功能，而且微软不打算支持在Code中使用音视频。</p>
+<p>等等，Code不是开源的吗？我自己编译不就好了。</p>
+<h2 id="第二回：自己编译Code"><a href="#第二回：自己编译Code" class="headerlink" title="第二回：自己编译Code"></a>第二回：自己编译Code</h2><p>说干就干，先克隆代码： <a href="https://github.com/microsoft/vscode.git" target="_blank" rel="noopener">https://github.com/microsoft/vscode.git</a></p>
+<p>然后编译，本地运行，看起来都OK。就是运行的时候似乎有些小问题。</p>
+<p>再试试打包成 App，结果，正如多数大型JavaScript项目打包一样，他崩溃了。</p>
+<p>我只想要一个简单功能，即便能打包成功，每次编译Code也是太麻烦了吧。</p>
+<p>等等，我应该不是第一个想吃螃蟹的人，先前一定有人想过这么干。Google一下，还真有。</p>
+<h2 id="第三回：VSCodium"><a href="#第三回：VSCodium" class="headerlink" title="第三回：VSCodium"></a>第三回：VSCodium</h2><p>是的VSCodium项目就是提供社区编译版本的Code。下载试试，音频视频都能播放。太好了，看来可以结案了。</p>
+<p>过了半天，突然想给内容编辑同事展示一下VSCodium里面编辑带音视频的Markdown的情况。先在自己电脑上试试，诶，有点不对，视频这么又灰了。不对是MP4灰了，Webm格式还是可以的。</p>
+<p>那么我们继续安装换编辑器的思路，试试Atom把，毕竟以前还用过Atom。</p>
+<h2 id="第四回：Atom"><a href="#第四回：Atom" class="headerlink" title="第四回：Atom"></a>第四回：Atom</h2><p>Atom里面用Markdown内嵌HTML标签的方式先试试。不错，MP4，MP3格式都可以啊。</p>
+<p>当然还是有些不甘心，毕竟现在Atom维护和流畅都比不上Code。尝试把Atom的FFmpeg库拷贝到VSCodium里面，结果预览直接黑屏。放弃，继续验证Atom的思路走下去。</p>
+<p>那么就是要让Markdown预览支持把音视频链接换成audio、video标签。发现比较流行的Markdown Preview Enhanced。但是问题又来了，这个插件没有直接使用markdown-it，而是使用了作者自己的mume模块。</p>
+<p>去看看mume的代码，但 <code>package.json</code> 里面并没有依赖markdown-it，甚至根本没有第三方markdown模块的依赖。</p>
+<p>只好去Markdown Preview Enhanced项目提功能需求。看了看作者还是深圳的，萌生了想付费让作者帮忙支持这个功能的想。打开邮箱，写邮件……</p>
+<p>等等，mume应该不会自己写markdown解析，再仔细找找。果然，有个依赖目录，里面真有markdown-it及几个插件的源代码。</p>
+<p>那么问题又简单了，赶紧为mume写个PR。提过去后，过了一段时间，收到作者回复，说可以接受PR，需要做些小的修改啥的。顺手为几个配置项，然后顺手把Markdown Preview Enhanced的PR也写了。</p>
+<p>带着本地版本的插件，给内容同事演示了一把，基本上满意。</p>
+<p>好的，接下来就等作者合并发版了。</p>
+<h2 id="第五回：峰回路转"><a href="#第五回：峰回路转" class="headerlink" title="第五回：峰回路转"></a>第五回：峰回路转</h2><p>虽然问题基本上解决了，但是Atom毕竟现在启动速度和插件方面不如Code了。而且要同时安装Code和Atom有点麻烦。然而压死骆驼的最后一根稻草是Atom的Markdown高亮插件不如Code的。</p>
+<p>还是Debug一下为什么不能播放音视频，是在chromium内核层面还是只是剔除了相关的FFmpeg实现？<br>通过JavaScript接口发现，chromium还是声称能支持MP4、MP3的。</p>
+<p>那么应该是可以替换ffmpeg库的。之前替换VSCodium失败应该是ffmpeg版本不一致导致的。</p>
+<p>再次Google，发现<a href="https://github.com/iteufel/nwjs-ffmpeg-prebuilt" target="_blank" rel="noopener">有个项目专门为NWjs编译ffmpeg</a>。NWjs和Electron（Code和Atom的运行平台）原理差不多。同时记得之前编译Code的时候，在网上下载的是ffmpeg 3.8 的版本，于是下载一个 3.8.1版本的预编译的ffmpeg。替换一下，居然OK了。居然就这么样OK了。</p>
+<p>所以最后的办法还是回到的Code，替换ffmpeg库的方式。写个 install.sh 脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line"></span><br><span class="line">curl -sL -o libffmpeg.zip https://github.com/iteufel/nwjs-ffmpeg-prebuilt/releases/download/0.38.1/0.38.1-osx-x64.zip</span><br><span class="line">unzip libffmpeg.zip</span><br><span class="line">mv ./libffmpeg.dylib <span class="string">"/Applications/Visual Studio Code.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib"</span></span><br></pre></td></tr></table></figure>
+<p>当然，这里还可以通过短连接等方式让每次下载的脚本是最新的ffmpeg。具体方法这里就不展开了。</p>
+<p>这里我吧他放到这个<a href="https://gist.github.com/xpol/483ec9967d0a3d14791374947ecf0ec8" target="_blank" rel="noopener">gist</a>这样就可以通过 curl pipe bash的方式安装。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s https://gist.githubusercontent.com/xpol/483ec9967d0a3d14791374947ecf0ec8/raw/4083e7563f48b9de57503932fce6c2512f70f5c8/install.sh | bash</span><br></pre></td></tr></table></figure>
+<p>最后再写个文档，教非编辑同事如何打开终端运行上面这段代码。</p>
+<p>完美！（<em>希望这个不是很快倒下的flag</em>）</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>曲折的过程为最终解决方案积累信息。</p>
+<p>不去编译一下Code，可能不知道要什么版本的ffmpeg。不先给Code写个插件，那么后面替换ffmpeg的方案可能也要曲折一些。</p>
+<p>当收集到的信息足够且充分连接的时候，得出理想的方案只是水到渠成而已。</p>
+
+      </div>
+      <div class="post-copyright">
+    <p class="copyright-item">
+      <span>Author: </span>
+      <a href="https://x.po.life">Xpol Wan</a>
+    </p>
+    <p class="copyright-item">
+      <span>Link: </span>
+      <a href="https://x.po.life/2019/05/12/visual-studio-code-video-support/">https://x.po.life/2019/05/12/visual-studio-code-video-support/</a>
+    </p>
+    <p class="copyright-item">
+      <span>License: </span><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+      <footer class="post-footer">
+        
+        <nav class="post-nav"><a class="next" href="/2017/01/07/test-drivent-game-development-by-example/">
+        <span class="next-text nav-default">测试驱动游戏开发：一个例子</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"></div></div>
+      </main>
+
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+        <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="iconfont icon-github" title="github"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even" target="_blank" rel="noopener">Even</a>
+  </span>
+
+  <span class="copyright-year">&copy;2015 - 2020<span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Xpol Wan</span>
+  </span>
+</div>
+</footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
+</html>
