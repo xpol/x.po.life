@@ -5,8 +5,8 @@ My personal blog site.
 ## Setup
 
 ```bash
-yarn global add hexo-cli
-yarn
+npm i -g hexo-cli
+npm i
 ```
 
 ## Local Preview
